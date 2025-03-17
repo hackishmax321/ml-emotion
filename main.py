@@ -53,7 +53,7 @@ async def predict(file: UploadFile = File(...)):
     except Exception as e:
         return {"error": str(e)}
 
-@app.post("/predict-handsigns-alphabet")
+@app.post("/predict-emotion")
 async def upload_images(files: list[UploadFile] = File(...)):
     try:
         predictions = []

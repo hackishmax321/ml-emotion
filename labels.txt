@@ -1,7 +1,7 @@
-0 happy
-1 sad
-2 neutral
-3 anger
-4 surprise
-5 disghust
-6 fear
+happy
+sad
+neutral
+anger
+surprise
+disghust
+fear
