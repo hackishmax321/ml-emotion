@@ -52,6 +52,29 @@ async def predict(file: UploadFile = File(...)):
         return {"class": class_name, "confidence": confidence_score}
     except Exception as e:
         return {"error": str(e)}
+    
+
+hand_model = load_model("hands/keras_model.h5", compile=False)
+
+# Load class labels for the emotion model
+with open("hands/labels.txt", "r", encoding="utf-8") as f:
+    emotion_class_names = [line.strip() for line in f.readlines()]
+    
+@app.post("/predict-handsign")
+async def predict(file: UploadFile = File(...)):
+    try:
+        # Read image file
+        image = Image.open(io.BytesIO(await file.read())).convert("RGB")
+        # Preprocess image
+        data = preprocess_image(image)
+        # Predict using model
+        prediction = hand_model.predict(data)
+        index = np.argmax(prediction)
+        class_name = class_names[index]
+        confidence_score = float(prediction[0][index])
+        return {"class": class_name, "confidence": confidence_score}
+    except Exception as e:
+        return {"error": str(e)}
 
 @app.post("/predict-emotion")
 async def upload_images(files: list[UploadFile] = File(...)):
