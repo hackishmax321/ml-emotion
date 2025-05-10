@@ -37,8 +37,23 @@ def preprocess_image(image: Image.Image) -> np.ndarray:
     normalized_image_array = (image_array / 127.5) - 1  # Normalize
     return np.expand_dims(normalized_image_array, axis=0)  # Add batch dimension
 
-# Numbers in Handsigns
+@app.post("/predict")
+async def predict(file: UploadFile = File(...)):
+    try:
+        # Read image file
+        image = Image.open(io.BytesIO(await file.read())).convert("RGB")
+        # Preprocess image
+        data = preprocess_image(image)
+        # Predict using model
+        prediction = model.predict(data)
+        index = np.argmax(prediction)
+        class_name = class_names[index]
+        confidence_score = float(prediction[0][index])
+        return {"class": class_name, "confidence": confidence_score}
+    except Exception as e:
+        return {"error": str(e)}
     
+
 hand_model = load_model("hands/keras_model.h5", compile=False)
 
 # Load class labels for the emotion model
