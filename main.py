@@ -70,7 +70,7 @@ async def predict(file: UploadFile = File(...)):
         # Predict using model
         prediction = hand_model.predict(data)
         index = np.argmax(prediction)
-        class_name = class_names[index]
+        class_name = emotion_class_names[index]
         confidence_score = float(prediction[0][index])
         return {"class": class_name, "confidence": confidence_score}
     except Exception as e:
