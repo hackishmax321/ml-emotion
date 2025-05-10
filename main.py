@@ -23,10 +23,10 @@ UPLOADS_DIR = "./uploads"
 Path(UPLOADS_DIR).mkdir(parents=True, exist_ok=True)
 
 # Load the Keras model
-model = load_model("keras_model.h5", compile=False)
+model = load_model("emotion/keras_model.h5", compile=False)
 
 # Load class labels
-with open("labels.txt", "r", encoding="utf-8") as f:
+with open("emotion/labels.txt", "r", encoding="utf-8") as f:
     class_names = [line.strip() for line in f.readlines()]
 
 # Image processing function
@@ -37,23 +37,8 @@ def preprocess_image(image: Image.Image) -> np.ndarray:
     normalized_image_array = (image_array / 127.5) - 1  # Normalize
     return np.expand_dims(normalized_image_array, axis=0)  # Add batch dimension
 
-@app.post("/predict")
-async def predict(file: UploadFile = File(...)):
-    try:
-        # Read image file
-        image = Image.open(io.BytesIO(await file.read())).convert("RGB")
-        # Preprocess image
-        data = preprocess_image(image)
-        # Predict using model
-        prediction = model.predict(data)
-        index = np.argmax(prediction)
-        class_name = class_names[index]
-        confidence_score = float(prediction[0][index])
-        return {"class": class_name, "confidence": confidence_score}
-    except Exception as e:
-        return {"error": str(e)}
+# Numbers in Handsigns
     
-
 hand_model = load_model("hands/keras_model.h5", compile=False)
 
 # Load class labels for the emotion model
